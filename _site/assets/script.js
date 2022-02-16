@@ -27,26 +27,6 @@ window.onload = (event) => {
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext('2d');
 
-    if (canvas.clientHeight > document.documentElement.clientHeight) {
-        canvas.style.width = 'inherit';
-        canvas.style.height = '100%';
-    }
-    if (canvas.clientWidth > document.documentElement.clientWidth) {
-        canvas.style.height = 'inherit';
-        canvas.style.width = '100%';
-    }
-
-    window.addEventListener('resize', () => {
-        if (canvas.clientHeight > document.documentElement.clientHeight) {
-            canvas.style.width = 'inherit';
-            canvas.style.height = '100%';
-        }
-        if (canvas.clientWidth > document.documentElement.clientWidth) {
-            canvas.style.height = 'inherit';
-            canvas.style.width = '100%';
-        }
-    });
-
     // touch listener
     canvas.addEventListener("touchstart", TouchHandleStart, false);
     canvas.addEventListener("touchmove", TouchHandleMove, false);
@@ -121,6 +101,9 @@ function fixedUpdate() {
 function draw() {
     // Clear the entire canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
 
     player.draw();
     opponent.draw();
@@ -215,7 +198,7 @@ let joyStick = {
         }
     },
     draw: function () {
-        this.x = this.size / 2 + this.margin + 80;
+        this.x = this.size / 2 + this.margin;
         this.y = canvas.height - this.size / 2 - this.margin;
 
         ctx.beginPath();
