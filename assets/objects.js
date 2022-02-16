@@ -224,7 +224,6 @@ let ball = new function () {
             player.position.y + player.roundedVelocity.y + (player.size.height / 2) > this.position.y
         ) {
             this.velocity.y = -this.velocity.y;
-            //this.position.y = player.position.y + player.roundedVelocity.y - this.size.height;
             player.position.y = this.position.y + this.size.height;
             player.roundedVelocity.y = 0;
             player.velocity.y = 0;
@@ -237,7 +236,6 @@ let ball = new function () {
             player.position.y + player.roundedVelocity.y + (player.size.height / 2) < this.position.y + this.size.height
         ) {
             this.velocity.y = -this.velocity.y;
-            //this.position.y = player.position.y + player.roundedVelocity.y + player.size.height;
             player.position.y = this.position.y - player.size.height;
             player.roundedVelocity.y = 0;
             player.velocity.y = 0;

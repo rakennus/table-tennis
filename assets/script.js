@@ -19,6 +19,7 @@ let controls = {
     touchStarted: false,
     end: { x: 0, y: 0 },
     start: { x: 0, y: 0 },
+    timeNotTouched: 0,
 }
 
 let xpAnnouncers = [];
@@ -99,6 +100,8 @@ function update() {
     player.update();
     opponent.update();
     ball.update();
+    controls.timeNotTouched += secondsPassed;
+    touchControlAnnouncer.update();
     joyStick.update();
 
     xpAnnouncers.forEach(element => {
@@ -129,6 +132,7 @@ function draw() {
     if (controls.touchControls) {
         joyStick.draw();
     }
+    touchControlAnnouncer.draw();
 
     xpAnnouncers.forEach(element => {
         element.draw();
@@ -188,50 +192,37 @@ let axis = {
     }
 }
 
-let joyStick = {
-    stickX: 0,
-    stickY: 0,
-    x: 0,
-    y: 0,
-    size: 120,
-    margin: 80,
-    padding: 20,
-    color: 'white',
-
+let touchControlAnnouncer = {
+    timer: 0,
+    alpha: 0,
+    visible: true,
     update: function () {
-        this.stickX = -(controls.start.x - controls.end.x);
-        this.stickY = -(controls.start.y - controls.end.y);
-
-        if (this.stickX > this.size / 2) {
-            this.stickX = this.size / 2;
-        } else if (this.stickX < -this.size / 2) {
-            this.stickX = -this.size / 2;
+        if (controls.timeNotTouched < 3) {
+            this.alpha -= 1 * secondsPassed;
+        } else {
+            this.alpha += 1 * secondsPassed;
         }
 
-        if (this.stickY > this.size / 2) {
-            this.stickY = this.size / 2;
-        } else if (this.stickY < -this.size / 2) {
-            this.stickY = -this.size / 2;
+        if (this.alpha >= 1) {
+            this.alpha = 1;
+        }
+        if (this.alpha <= 0) {
+            this.alpha = 0;
         }
     },
     draw: function () {
-        this.x = this.size / 2 + this.margin + 80;
-        this.y = canvas.height - this.size / 2 - this.margin;
-
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size / 2, 0, 2 * Math.PI);
-        ctx.strokeStyle = this.color;
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.arc(this.x + this.stickX, this.y + this.stickY, this.size / 2 - this.padding, 0, 2 * Math.PI);
-        ctx.fillStyle = this.color;
-        ctx.fill();
-    }
+        ctx.font = '30px Arial';
+        ctx.textAlign = "center";
+        ctx.textBaseline = 'middle';
+        ctx.globalAlpha = this.alpha;
+        ctx.fillText('Use WASD or Arrow keys to move Player', canvas.width / 2, canvas.height / 2);
+        ctx.globalAlpha = 1;
+    },
 }
 
 function keyDownHandler(e) {
     controls.touchControls = false;
+    controls.timeNotTouched = 0;
 
     if (e.key == "Right" || e.key == "ArrowRight" || e.key == "d" || e.key == "D") {
         controls.right = true;
@@ -277,6 +268,7 @@ function TouchHandleStart(event) {
 
 function TouchHandleMove(event) {
     event.preventDefault();
+    controls.timeNotTouched = 0;
 
     controls.end.x = event.changedTouches[0].pageX;
     controls.end.y = event.changedTouches[0].pageY;
@@ -312,6 +304,9 @@ function xpAnnouncer(amount) {
     this.velocity = 1;
     this.alpha = 1;
     this.added = 0;
+    this.playerScore = player.score;
+
+    player.score += this.amount;
 
     this.update = function () {
         this.timer += secondsPassed;
@@ -322,10 +317,6 @@ function xpAnnouncer(amount) {
         }
         if (this.timer > 0.4) {
             this.rotation = 0;
-            if (this.added < this.amount) {
-                player.score += 20;
-                this.added += 20;
-            }
         }
         if (this.timer > 1) {
             this.rotation = (this.timer - 1) * 10;
@@ -352,8 +343,18 @@ function xpAnnouncer(amount) {
 let xpCounter = {
     rotation: 0,
     timer: 0,
+    score: 0,
+
     update: function () {
         this.timer += secondsPassed;
+
+        if (this.score < player.score) {
+            this.score += Math.trunc(10000 * secondsPassed);
+        }
+
+        if (this.score > player.score) {
+            this.score = player.score;
+        }
     },
     draw: function () {
         ctx.save();
@@ -363,8 +364,50 @@ let xpCounter = {
 
         ctx.font = '30px Arial';
         ctx.textAlign = "center";
-        ctx.fillText(player.score + ' XP', 0, 0);
+        ctx.fillText(this.score + ' XP', 0, 0);
 
         ctx.restore();
+    }
+}
+
+let joyStick = {
+    stickX: 0,
+    stickY: 0,
+    x: 0,
+    y: 0,
+    size: 200,
+    margin: 80,
+    padding: 20,
+    color: 'white',
+
+    update: function () {
+        this.stickX = -(controls.start.x - controls.end.x);
+        this.stickY = -(controls.start.y - controls.end.y);
+
+        if (this.stickX > this.size / 2) {
+            this.stickX = this.size / 2;
+        } else if (this.stickX < -this.size / 2) {
+            this.stickX = -this.size / 2;
+        }
+
+        if (this.stickY > this.size / 2) {
+            this.stickY = this.size / 2;
+        } else if (this.stickY < -this.size / 2) {
+            this.stickY = -this.size / 2;
+        }
+    },
+    draw: function () {
+        this.x = this.size / 2 + this.margin + 80;
+        this.y = canvas.height - this.size / 2 - this.margin;
+
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size / 2, 0, 2 * Math.PI);
+        ctx.strokeStyle = this.color;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(this.x + this.stickX, this.y + this.stickY, this.size / 2 - this.padding, 0, 2 * Math.PI);
+        ctx.fillStyle = this.color;
+        ctx.fill();
     }
 }
