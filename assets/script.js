@@ -2,6 +2,9 @@
 // global variable declaration
 let canvas;
 let ctx;
+let rect;
+
+let ratio;
 
 let secondsPassed = 0;
 let oldTimeStamp = 0;
@@ -28,25 +31,13 @@ window.onload = (event) => {
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext('2d');
 
-    if (canvas.clientHeight > document.documentElement.clientHeight) {
-        canvas.style.width = 'inherit';
-        canvas.style.height = '100%';
-    }
-    if (canvas.clientWidth > document.documentElement.clientWidth) {
-        canvas.style.height = 'inherit';
-        canvas.style.width = '100%';
-    }
+    myGameArea.canvasStyle();
 
     window.addEventListener('resize', () => {
-        if (canvas.clientHeight > document.documentElement.clientHeight) {
-            canvas.style.width = 'inherit';
-            canvas.style.height = '100%';
-        }
-        if (canvas.clientWidth > document.documentElement.clientWidth) {
-            canvas.style.height = 'inherit';
-            canvas.style.width = '100%';
-        }
+        myGameArea.canvasStyle();
     });
+
+    rect = canvas.getBoundingClientRect();
 
     // touch listener
     canvas.addEventListener("touchstart", TouchHandleStart, false);
@@ -73,7 +64,19 @@ let myGameArea = {
 
         // Start the first frame request
         window.requestAnimationFrame(gameLoop);
-    }
+    },
+    canvasStyle: function () {
+        if (canvas.clientHeight > document.documentElement.clientHeight) {
+            canvas.style.width = 'inherit';
+            canvas.style.height = '100%';
+        }
+        if (canvas.clientWidth > document.documentElement.clientWidth) {
+            canvas.style.height = 'inherit';
+            canvas.style.width = '100%';
+        }
+
+        ratio = canvas.width / canvas.clientWidth;
+    },
 }
 
 function gameLoop(timeStamp) {
@@ -97,12 +100,12 @@ function gameLoop(timeStamp) {
 
 // update all objects
 function update() {
+    joyStick.update();
     player.update();
     opponent.update();
     ball.update();
     controls.timeNotTouched += secondsPassed;
     touchControlAnnouncer.update();
-    joyStick.update();
 
     xpAnnouncers.forEach(element => {
         element.update();
@@ -197,7 +200,7 @@ let touchControlAnnouncer = {
     alpha: 0,
     visible: true,
     update: function () {
-        if (controls.timeNotTouched < 3) {
+        if (controls.timeNotTouched < 5) {
             this.alpha -= 1 * secondsPassed;
         } else {
             this.alpha += 1 * secondsPassed;
@@ -213,9 +216,11 @@ let touchControlAnnouncer = {
     draw: function () {
         ctx.font = '30px Arial';
         ctx.textAlign = "center";
-        ctx.textBaseline = 'middle';
         ctx.globalAlpha = this.alpha;
-        ctx.fillText('Use WASD or Arrow keys to move Player', canvas.width / 2, canvas.height / 2);
+        ctx.textBaseline = 'bottom';
+        ctx.fillText('Use WASD or Arrow keys to move Player,', canvas.width / 2, canvas.height / 2);
+        ctx.textBaseline = 'top';
+        ctx.fillText('or on phones you can use the Joystick.', canvas.width / 2, canvas.height / 2);
         ctx.globalAlpha = 1;
     },
 }
@@ -257,33 +262,32 @@ function keyUpHandler(e) {
 function TouchHandleStart(event) {
     event.preventDefault();
     controls.touchControls = true;
-
     controls.touchStarted = true;
-    controls.start.x = event.changedTouches[0].pageX;
-    controls.start.y = event.changedTouches[0].pageY;
 
-    controls.end.x = event.changedTouches[0].pageX;
-    controls.end.y = event.changedTouches[0].pageY;
+    controls.start.x = (event.changedTouches[0].pageX - rect.left) * ratio;
+    controls.start.y = (event.changedTouches[0].pageY - rect.top) * ratio;
+
+    controls.end.x = (event.changedTouches[0].pageX - rect.left) * ratio;
+    controls.end.y = (event.changedTouches[0].pageY - rect.top) * ratio;
 };
 
 function TouchHandleMove(event) {
     event.preventDefault();
     controls.timeNotTouched = 0;
 
-    controls.end.x = event.changedTouches[0].pageX;
-    controls.end.y = event.changedTouches[0].pageY;
+    controls.end.x = (event.changedTouches[0].pageX - rect.left) * ratio;
+    controls.end.y = (event.changedTouches[0].pageY - rect.top) * ratio;
 };
 
 function TouchHandleEnd(event) {
     event.preventDefault();
+    controls.touchStarted = false;
 
     controls.start.x = 0;
     controls.start.y = 0;
 
     controls.end.x = 0;
     controls.end.y = 0;
-
-    controls.touchStarted = false;
 };
 
 function coinflip() {
@@ -376,11 +380,15 @@ let joyStick = {
     x: 0,
     y: 0,
     size: 200,
-    margin: 80,
-    padding: 20,
+    padding: 10,
     color: 'white',
+    vertical: 0,
+    horizontal: 0,
 
     update: function () {
+        this.vertical = this.stickY / (this.size / 2)
+        this.horizontal = this.stickX / (this.size / 2)
+
         this.stickX = -(controls.start.x - controls.end.x);
         this.stickY = -(controls.start.y - controls.end.y);
 
@@ -397,17 +405,18 @@ let joyStick = {
         }
     },
     draw: function () {
-        this.x = this.size / 2 + this.margin + 80;
-        this.y = canvas.height - this.size / 2 - this.margin;
+        if (controls.touchStarted) {
+            ctx.globalAlpha = 0.4;
 
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size / 2, 0, 2 * Math.PI);
-        ctx.strokeStyle = this.color;
-        ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(controls.start.x, controls.start.y, this.size / 2, 0, 2 * Math.PI);
+            ctx.strokeStyle = this.color;
+            ctx.stroke();
 
-        ctx.beginPath();
-        ctx.arc(this.x + this.stickX, this.y + this.stickY, this.size / 2 - this.padding, 0, 2 * Math.PI);
-        ctx.fillStyle = this.color;
-        ctx.fill();
+            ctx.beginPath();
+            ctx.arc(controls.start.x + this.stickX, controls.start.y + this.stickY, this.size / 2 - this.padding, 0, 2 * Math.PI);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+        }
     }
 }

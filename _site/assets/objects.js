@@ -16,7 +16,7 @@ let player = new function () {
         x: 0,
         y: 0
     };
-    
+
     this.speed = 800;
     this.points = 0;
     this.score = 0;
@@ -29,18 +29,24 @@ let player = new function () {
     this.movment = function () {
         // controls
         if (controls.touchControls) {
-            this.velocity.y = this.speed * joyStick.stickY / (joyStick.size / 2);
+            this.velocity.y = this.speed * joyStick.vertical;
         } else {
             this.velocity.y = this.speed * axis.vertical;
         }
 
         // collision detection with canvas borders
-        if (this.position.y < 0) {
+        if (this.position.y + this.roundedVelocity.y < 0) {
             this.velocity.y = 0;
+            this.roundedVelocity.y = 0;
             this.position.y = 0;
-        } else if (this.position.y + this.size.height > canvas.height) {
+            axis.vertical = 0;
+            joyStick.vertical = 0;
+        } else if (this.position.y + this.size.height + this.roundedVelocity.y > canvas.height) {
             this.velocity.y = 0;
+            this.roundedVelocity.y = 0;
             this.position.y = canvas.height - this.size.height;
+            axis.vertical = 0;
+            joyStick.vertical = 0;
         }
 
         // calculating the position by applaying the velocity to the old position
@@ -128,12 +134,13 @@ let opponent = new function () {
         }
 
         // collision detection with canvas borders
-        if (this.position.y < 0) {
+        if (this.position.y + this.roundedVelocity.y < 0) {
             this.velocity.y = 0;
+            this.roundedVelocity.y = 0;
             this.position.y = 0;
-        }
-        if (this.position.y + this.size.height > canvas.height) {
+        } else if (this.position.y + this.size.height + this.roundedVelocity.y > canvas.height) {
             this.velocity.y = 0;
+            this.roundedVelocity.y = 0;
             this.position.y = canvas.height - this.size.height;
         }
 
@@ -181,14 +188,12 @@ let ball = new function () {
     };
 
     this.reset = function () {
+
         this.position.x = canvas.width / 2 - ball.size.width / 2;
         this.position.y = canvas.height / 2 - ball.size.height / 2;
 
-        if (coinflip()) {
-            this.velocity.x = -speed;
-        } else {
-            this.velocity.x = speed;
-        }
+        this.velocity.x = -speed;
+
         if (coinflip()) {
             this.velocity.y = -speed;
         } else {
@@ -220,27 +225,29 @@ let ball = new function () {
         if (
             player.position.x + player.roundedVelocity.x < this.position.x + this.size.width &&
             player.position.x + player.roundedVelocity.x + player.size.width > this.position.x &&
-            player.position.y + player.roundedVelocity.y < this.position.y + this.size.height &&
-            player.position.y + player.roundedVelocity.y + (player.size.height / 2) > this.position.y
+            player.position.y + player.roundedVelocity.y < this.position.y + this.roundedVelocity.y + this.size.height &&
+            player.position.y + player.roundedVelocity.y + (player.size.height / 2) > this.position.y + this.roundedVelocity.y
         ) {
             this.velocity.y = -this.velocity.y;
-            //this.position.y = player.position.y + player.roundedVelocity.y - this.size.height;
             player.position.y = this.position.y + this.size.height;
             player.roundedVelocity.y = 0;
             player.velocity.y = 0;
+            axis.vertical = 0;
+            joyStick.vertical = 0;
         }
 
         if (
             player.position.x + player.roundedVelocity.x < this.position.x + this.size.width &&
             player.position.x + player.roundedVelocity.x + player.size.width > this.position.x &&
-            player.position.y + player.roundedVelocity.y + player.size.height > this.position.y &&
-            player.position.y + player.roundedVelocity.y + (player.size.height / 2) < this.position.y + this.size.height
+            player.position.y + player.roundedVelocity.y + player.size.height > this.position.y + this.roundedVelocity.y &&
+            player.position.y + player.roundedVelocity.y + (player.size.height / 2) < this.position.y + this.roundedVelocity.y + this.size.height
         ) {
             this.velocity.y = -this.velocity.y;
-            //this.position.y = player.position.y + player.roundedVelocity.y + player.size.height;
             player.position.y = this.position.y - player.size.height;
             player.roundedVelocity.y = 0;
             player.velocity.y = 0;
+            axis.vertical = 0;
+            joyStick.vertical = 0;
         }
 
         if (
