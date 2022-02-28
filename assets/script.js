@@ -53,7 +53,7 @@ window.onload = (e) => {
     myGameArea.canvasStyle();
 
     window.addEventListener('resize', myGameArea.canvasStyle());
-    screen.orientation.addEventListener('change', myGameArea.canvasStyle())
+    screen.orientation.addEventListener('change', myGameArea.canvasStyle());
 
     rect = canvas.getBoundingClientRect();
 
@@ -83,15 +83,16 @@ let myGameArea = {
         draw();
     },
     canvasStyle: function () {
+        /*
         if (canvas.clientHeight > document.documentElement.clientHeight) {
             canvas.style.width = 'inherit';
             canvas.style.height = '100%';
         }
         if (canvas.clientWidth > document.documentElement.clientWidth) {
-            canvas.style.height = 'inherit';
             canvas.style.width = '100%';
+            canvas.style.height = 'inherit';
         }
-
+        */
         ratio = canvas.width / canvas.clientWidth;
     },
     start: function () {

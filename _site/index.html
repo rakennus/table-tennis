@@ -4,12 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>pong game</title>
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <title>table tennis</title>
     <style>
         body {
             background-color: #202020;
             overflow: hidden;
+            margin: 0;
+            padding: 0;
         }
 
         #canvas {
@@ -18,19 +20,25 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 100%;
-            box-shadow: #0000008f 0 0 10px 10px;
             background-color: black;
             image-rendering: -moz-crisp-edges;
             image-rendering: -webkit-crisp-edges;
             image-rendering: pixelated;
             image-rendering: crisp-edges;
+            
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
         }
     </style>
 </head>
 
 <body>
-    <canvas id="canvas" width="1000px" height="600px"></canvas>
+    <div id="container">
+        <canvas id="canvas" width="1000px" height="600px"></canvas>
+    </div>
 </body>
 <script src="assets/script.js"></script>
 <script src="assets/player.js"></script>
