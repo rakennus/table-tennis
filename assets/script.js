@@ -31,8 +31,6 @@ function requestFullScreen(element) {
     }
 }
 
-var elem = document.body; // Make the body go full screen.
-
 let controls = {
     left: false,
     right: false,
@@ -68,7 +66,6 @@ window.onload = (e) => {
 
     // loads game area
     myGameArea.load();
-    myGameArea.start();
 }
 
 let myGameArea = {
