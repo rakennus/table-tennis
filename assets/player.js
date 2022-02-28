@@ -5,8 +5,9 @@ let player = new function () {
     this.velocity = {x: 0,y: 0};
     this.roundedVelocity = {x: 0,y: 0};
 
-    this.maxVelocity = 1400;
-    this.accelleration = 8000;
+    this.maxVelocity = 1000;
+    this.accelleration = 6000;
+    this.touchAccelleration = 8000;
     this.points = 0;
     this.score = 0;
 
@@ -21,9 +22,9 @@ let player = new function () {
             if (!touchPadle.up && !touchPadle.down || touchPadle.up && touchPadle.down) {
                 this.velocity.y *= Math.pow(0.3, secondsPassed);
             } else if (touchPadle.down) {
-                this.velocity.y += this.accelleration * secondsPassed;
+                this.velocity.y += this.touchAccelleration * secondsPassed;
             } else if (touchPadle.up) {
-                this.velocity.y -= this.accelleration * secondsPassed;
+                this.velocity.y -= this.touchAccelleration * secondsPassed;
             }
         } else {            
             if (!controls.up && !controls.down || controls.up && controls.down) {
