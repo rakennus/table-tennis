@@ -52,9 +52,8 @@ window.onload = (e) => {
 
     myGameArea.canvasStyle();
 
-    window.addEventListener('resize', () => {
-        myGameArea.canvasStyle();
-    });
+    window.addEventListener('resize', myGameArea.canvasStyle());
+    screen.orientation.addEventListener('change', myGameArea.canvasStyle())
 
     rect = canvas.getBoundingClientRect();
 
