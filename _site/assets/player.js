@@ -1,10 +1,11 @@
 let player = new function () {
     // player properties
-    this.position = {x: 0,y: 0};
-    this.size = {width: 20,height: 100};
-    this.velocity = {x: 0,y: 0};
-    this.roundedVelocity = {x: 0,y: 0};
+    this.position = { x: 0, y: 0 };
+    this.size = { width: 20, height: 100 };
+    this.velocity = { x: 0, y: 0 };
+    this.roundedVelocity = { x: 0, y: 0 };
 
+    this.friction = 0.3;
     this.maxVelocity = 800;
     this.accelleration = 4000;
     this.touchAccelleration = 4000;
@@ -20,15 +21,15 @@ let player = new function () {
         // controls
         if (controls.touchControls) {
             if (!touchPadle.up && !touchPadle.down || touchPadle.up && touchPadle.down) {
-                this.velocity.y *= Math.pow(0.3, secondsPassed);
+                this.velocity.y *= Math.pow(this.friction, secondsPassed);
             } else if (touchPadle.down) {
                 this.velocity.y += this.touchAccelleration * secondsPassed;
             } else if (touchPadle.up) {
                 this.velocity.y -= this.touchAccelleration * secondsPassed;
             }
-        } else {            
+        } else {
             if (!controls.up && !controls.down || controls.up && controls.down) {
-                this.velocity.y *= Math.pow(0.3, secondsPassed);
+                this.velocity.y *= Math.pow(this.friction, secondsPassed);
             } else if (controls.down) {
                 this.velocity.y += this.accelleration * secondsPassed;
             } else if (controls.up) {
@@ -36,12 +37,8 @@ let player = new function () {
             }
         }
 
-        if (this.velocity.y >= this.maxVelocity) {
-            this.velocity.y = this.maxVelocity;
-        }
-        if (this.velocity.y <= -this.maxVelocity) {
-            this.velocity.y = -this.maxVelocity;
-        }
+        if (this.velocity.y >= this.maxVelocity) this.velocity.y = this.maxVelocity;
+        if (this.velocity.y <= -this.maxVelocity) this.velocity.y = -this.maxVelocity;
 
         // collision detection with canvas borders
         if (this.position.y + this.roundedVelocity.y < 0) {

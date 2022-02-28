@@ -1,7 +1,7 @@
 "use strict";
 // global variable declaration
-let canvas = null;
-let ctx = null;
+let canvas = document.getElementById('canvas');
+let ctx = canvas.getContext('2d');
 let rect = null;
 
 let ratio = 0;
@@ -44,40 +44,36 @@ let controls = {
 
 let xpAnnouncers = [];
 
-window.onload = (e) => {
-    canvas = document.getElementById('canvas');
-    ctx = canvas.getContext('2d');
-
-    myGameArea.canvasStyle();
-
-    window.addEventListener('resize', myGameArea.canvasStyle());
-    screen.orientation.addEventListener('change', myGameArea.canvasStyle());
-
-    rect = canvas.getBoundingClientRect();
-
-    // touch listener
-    canvas.addEventListener("touchstart", TouchHandleStart, false);
-    canvas.addEventListener("touchmove", TouchHandleMove, false);
-    canvas.addEventListener("touchend", TouchHandleEnd, false);
-
-    // keyboard listener
-    document.addEventListener("keydown", keyDownHandler, false);
-    document.addEventListener("keyup", keyUpHandler, false);
-
-    // loads game area
-    myGameArea.load();
-}
+// loads game area on window load
+window.onload = (e) => {myGameArea.load()}
 
 let myGameArea = {
-    load: function () {
-        player.position.x = 40;
-        player.position.y = canvas.height / 2 - player.size.height / 2;
-
-        opponent.position.x = canvas.width - opponent.size.width - 40;
-        opponent.position.y = canvas.height / 2 - opponent.size.height / 2;
+    load: function () {    
+        myGameArea.canvasStyle();
+    
+        window.addEventListener('resize', myGameArea.canvasStyle());
+        screen.orientation.addEventListener('change', myGameArea.canvasStyle());
+    
+        rect = canvas.getBoundingClientRect();
+    
+        // touch listener
+        canvas.addEventListener("touchstart", TouchHandleStart, false);
+        canvas.addEventListener("touchmove", TouchHandleMove, false);
+        canvas.addEventListener("touchend", TouchHandleEnd, false);
+    
+        // keyboard listener
+        document.addEventListener("keydown", keyDownHandler, false);
+        document.addEventListener("keyup", keyUpHandler, false);
 
         ball.reset();
-        draw();
+
+        player.position.x = 40,
+        player.position.y = canvas.height / 2 - player.size.height / 2
+
+        opponent.position.x = canvas.width - opponent.size.width - 40,
+        opponent.position.y = canvas.height / 2 - opponent.size.height / 2
+
+        // draw();
     },
     canvasStyle: function () {
         /*
