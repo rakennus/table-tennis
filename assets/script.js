@@ -202,10 +202,10 @@ let touchControlAnnouncer = {
         ctx.textAlign = "center";
         ctx.globalAlpha = this.alpha;
         ctx.textBaseline = 'bottom';
-        ctx.fillText('Use WASD or Arrow keys to move Player,', canvas.width / 2, canvas.height / 2);
+        ctx.fillText('Use WASD or Arrow keys to move the Player,', canvas.width / 2, canvas.height / 2);
         ctx.textBaseline = 'top';
         ctx.fillText(
-            'or on phones you can tap on the right and on the left to move up and down.',
+            'or tap on the right and on the left to move up and down.',
             canvas.width / 2,
             canvas.height / 2
         );
@@ -234,22 +234,18 @@ function keyUpHandler(e) {
 function TouchHandleStart(e) {
     e.preventDefault();
     controls.touchControls = true;
-    controls.touchStarted = true;
-
+    controls.timeNotTouched = 0;
     controls.ongoingTouches = e.changedTouches;
 };
 
 function TouchHandleMove(e) {
     e.preventDefault();
     controls.timeNotTouched = 0;
-
     controls.ongoingTouches = e.changedTouches;
 };
 
 function TouchHandleEnd(e) {
     e.preventDefault();
-    controls.touchStarted = false;
-
     controls.ongoingTouches = [];
 };
 
@@ -268,7 +264,7 @@ let touchPadle = {
                 (controls.ongoingTouches[0].pageY - rect.top) * ratio < canvas.height &&
                 (controls.ongoingTouches[0].pageY - rect.top) * ratio > 0
             ) {
-                this.down = true;
+                this.up = true;
             }
             if (
                 (controls.ongoingTouches[0].pageX - rect.left) * ratio < canvas.width &&
@@ -276,7 +272,7 @@ let touchPadle = {
                 (controls.ongoingTouches[0].pageY - rect.top) * ratio < canvas.height &&
                 (controls.ongoingTouches[0].pageY - rect.top) * ratio > 0
             ) {
-                this.up = true;
+                this.down = true;
             }
         }
     },

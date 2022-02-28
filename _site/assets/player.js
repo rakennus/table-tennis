@@ -5,8 +5,8 @@ let player = new function () {
     this.velocity = {x: 0,y: 0};
     this.roundedVelocity = {x: 0,y: 0};
 
-    this.maxVelocity = 400;
-    this.accelleration = 4000;
+    this.maxVelocity = 1400;
+    this.accelleration = 8000;
     this.points = 0;
     this.score = 0;
 
@@ -19,7 +19,7 @@ let player = new function () {
         // controls
         if (controls.touchControls) {
             if (!touchPadle.up && !touchPadle.down || touchPadle.up && touchPadle.down) {
-                this.velocity.y *= Math.pow(0.5, secondsPassed);
+                this.velocity.y *= Math.pow(0.3, secondsPassed);
             } else if (touchPadle.down) {
                 this.velocity.y += this.accelleration * secondsPassed;
             } else if (touchPadle.up) {
@@ -27,7 +27,7 @@ let player = new function () {
             }
         } else {            
             if (!controls.up && !controls.down || controls.up && controls.down) {
-                this.velocity.y *= Math.pow(0.5, secondsPassed);
+                this.velocity.y *= Math.pow(0.3, secondsPassed);
             } else if (controls.down) {
                 this.velocity.y += this.accelleration * secondsPassed;
             } else if (controls.up) {
@@ -35,11 +35,11 @@ let player = new function () {
             }
         }
 
-        if (this.velocity.x >= this.maxVelocity) {
-            this.velocity.x = this.maxVelocity;
+        if (this.velocity.y >= this.maxVelocity) {
+            this.velocity.y = this.maxVelocity;
         }
-        if (this.velocity.x <= -this.maxVelocity) {
-            this.velocity.x = -this.maxVelocity;
+        if (this.velocity.y <= -this.maxVelocity) {
+            this.velocity.y = -this.maxVelocity;
         }
 
         // collision detection with canvas borders
