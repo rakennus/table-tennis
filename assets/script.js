@@ -1,17 +1,37 @@
 "use strict";
 // global variable declaration
-let canvas;
-let ctx;
-let rect;
+let canvas = null;
+let ctx = null;
+let rect = null;
 
-let ratio;
+let ratio = 0;
 
 let secondsPassed = 0;
 let oldTimeStamp = 0;
 let fps = 0;
 
-let fixedUpdateTime = 0;
-let fixedUpdateCount = 0;
+let run = true;
+let resetTime = false;
+
+function requestFullScreen(element) {
+    // Supports most browsers and their versions.
+    var requestMethod =
+        element.requestFullScreen ||
+        element.webkitRequestFullScreen ||
+        element.mozRequestFullScreen ||
+        element.msRequestFullScreen;
+
+    if (requestMethod) { // Native full screen.
+        requestMethod.call(element);
+    } else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
+        var wscript = new ActiveXObject("WScript.Shell");
+        if (wscript !== null) {
+            wscript.SendKeys("{F11}");
+        }
+    }
+}
+
+var elem = document.body; // Make the body go full screen.
 
 let controls = {
     left: false,
@@ -20,14 +40,13 @@ let controls = {
     down: false,
     touchControls: false,
     touchStarted: false,
-    end: { x: 0, y: 0 },
-    start: { x: 0, y: 0 },
+    ongoingTouches: [],
     timeNotTouched: 0,
 }
 
 let xpAnnouncers = [];
 
-window.onload = (event) => {
+window.onload = (e) => {
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext('2d');
 
@@ -50,6 +69,7 @@ window.onload = (event) => {
 
     // loads game area
     myGameArea.load();
+    myGameArea.start();
 }
 
 let myGameArea = {
@@ -61,9 +81,7 @@ let myGameArea = {
         opponent.position.y = canvas.height / 2 - opponent.size.height / 2;
 
         ball.reset();
-
-        // Start the first frame request
-        window.requestAnimationFrame(gameLoop);
+        draw();
     },
     canvasStyle: function () {
         if (canvas.clientHeight > document.documentElement.clientHeight) {
@@ -77,12 +95,23 @@ let myGameArea = {
 
         ratio = canvas.width / canvas.clientWidth;
     },
+    start: function () {
+        // Start the first frame request
+        window.requestAnimationFrame(gameLoop);
+        run = true;
+        resetTime = true;
+    },
+    stop: function () {
+        run = false;
+    }
 }
 
 function gameLoop(timeStamp) {
     // Calculate the number of seconds passed since the last frame
     secondsPassed = (timeStamp - oldTimeStamp) / 1000;
     oldTimeStamp = timeStamp;
+
+    if (resetTime) secondsPassed = 0; resetTime = false;
 
     // Calculate fps
     fps = Math.round(1 / secondsPassed);
@@ -95,12 +124,12 @@ function gameLoop(timeStamp) {
     }
 
     // The loop function has reached it's end. Keep requesting new frames
-    window.requestAnimationFrame(gameLoop);
+    if (run) window.requestAnimationFrame(gameLoop);
 }
 
 // update all objects
 function update() {
-    joyStick.update();
+    touchPadle.update();
     player.update();
     opponent.update();
     ball.update();
@@ -115,13 +144,6 @@ function update() {
     });
 
     xpCounter.update();
-
-    fixedUpdateTime += secondsPassed;
-    if (fixedUpdateTime >= fixedUpdateCount) { fixedUpdate(); fixedUpdateCount += 0.01 };
-}
-
-function fixedUpdate() {
-    axis.update();
 }
 
 function draw() {
@@ -133,7 +155,7 @@ function draw() {
     ball.draw();
 
     if (controls.touchControls) {
-        joyStick.draw();
+        touchPadle.draw();
     }
     touchControlAnnouncer.draw();
 
@@ -155,44 +177,6 @@ function draw() {
     ctx.fillText(opponent.points, canvas.width - canvas.width / 4, 20);
 
     xpCounter.draw();
-}
-
-let axis = {
-    horizontal: 0,
-    vertical: 0,
-    speed: 0.1,
-
-    update: function () {
-        if (!controls.left && !controls.right || controls.left && controls.right) {
-            this.horizontal *= 0.95;
-        } else if (controls.right) {
-            this.horizontal += this.speed;
-        } else if (controls.left) {
-            this.horizontal -= this.speed;
-        }
-
-        if (this.horizontal >= 1) {
-            this.horizontal = 1;
-        }
-        if (this.horizontal <= -1) {
-            this.horizontal = -1;
-        }
-
-        if (!controls.up && !controls.down || controls.up && controls.down) {
-            this.vertical *= 0.95;
-        } else if (controls.down) {
-            this.vertical += this.speed;
-        } else if (controls.up) {
-            this.vertical -= this.speed;
-        }
-
-        if (this.vertical >= 1) {
-            this.vertical = 1;
-        }
-        if (this.vertical <= -1) {
-            this.vertical = -1;
-        }
-    }
 }
 
 let touchControlAnnouncer = {
@@ -220,7 +204,11 @@ let touchControlAnnouncer = {
         ctx.textBaseline = 'bottom';
         ctx.fillText('Use WASD or Arrow keys to move Player,', canvas.width / 2, canvas.height / 2);
         ctx.textBaseline = 'top';
-        ctx.fillText('or on phones you can use the Joystick.', canvas.width / 2, canvas.height / 2);
+        ctx.fillText(
+            'or on phones you can tap on the right and on the left to move up and down.',
+            canvas.width / 2,
+            canvas.height / 2
+        );
         ctx.globalAlpha = 1;
     },
 }
@@ -229,66 +217,72 @@ function keyDownHandler(e) {
     controls.touchControls = false;
     controls.timeNotTouched = 0;
 
-    if (e.key == "Right" || e.key == "ArrowRight" || e.key == "d" || e.key == "D") {
-        controls.right = true;
-    }
-    else if (e.key == "Left" || e.key == "ArrowLeft" || e.key == "a" || e.key == "A") {
-        controls.left = true;
-    }
-    else if (e.key == "Up" || e.key == "ArrowUp" || e.key == "w" || e.key == "W") {
-        controls.up = true;
-    }
-    else if (e.key == "Down" || e.key == "ArrowDown" || e.key == "s" || e.key == "S") {
-        controls.down = true;
-    }
+    if (e.key == "Right" || e.key == "ArrowRight" || e.key == "d" || e.key == "D") controls.right = true;
+    if (e.key == "Left" || e.key == "ArrowLeft" || e.key == "a" || e.key == "A") controls.left = true;
+    if (e.key == "Up" || e.key == "ArrowUp" || e.key == "w" || e.key == "W") controls.up = true;
+    if (e.key == "Down" || e.key == "ArrowDown" || e.key == "s" || e.key == "S") controls.down = true;
 }
 
 function keyUpHandler(e) {
-    if (e.key == "Right" || e.key == "ArrowRight" || e.key == "d" || e.key == "D") {
-        controls.right = false;
-    }
-    else if (e.key == "Left" || e.key == "ArrowLeft" || e.key == "a" || e.key == "A") {
-        controls.left = false;
-    }
-    else if (e.key == "Up" || e.key == "ArrowUp" || e.key == "w" || e.key == "W") {
-        controls.up = false;
-    }
-    else if (e.key == "Down" || e.key == "ArrowDown" || e.key == "s" || e.key == "S") {
-        controls.down = false;
-    }
+    if (e.key == "Right" || e.key == "ArrowRight" || e.key == "d" || e.key == "D") controls.right = false;
+    if (e.key == "Left" || e.key == "ArrowLeft" || e.key == "a" || e.key == "A") controls.left = false;
+    if (e.key == "Up" || e.key == "ArrowUp" || e.key == "w" || e.key == "W") controls.up = false;
+    if (e.key == "Down" || e.key == "ArrowDown" || e.key == "s" || e.key == "S") controls.down = false;
 }
 
 // touch handler
-function TouchHandleStart(event) {
-    event.preventDefault();
+function TouchHandleStart(e) {
+    e.preventDefault();
     controls.touchControls = true;
     controls.touchStarted = true;
 
-    controls.start.x = (event.changedTouches[0].pageX - rect.left) * ratio;
-    controls.start.y = (event.changedTouches[0].pageY - rect.top) * ratio;
-
-    controls.end.x = (event.changedTouches[0].pageX - rect.left) * ratio;
-    controls.end.y = (event.changedTouches[0].pageY - rect.top) * ratio;
+    controls.ongoingTouches = e.changedTouches;
 };
 
-function TouchHandleMove(event) {
-    event.preventDefault();
+function TouchHandleMove(e) {
+    e.preventDefault();
     controls.timeNotTouched = 0;
 
-    controls.end.x = (event.changedTouches[0].pageX - rect.left) * ratio;
-    controls.end.y = (event.changedTouches[0].pageY - rect.top) * ratio;
+    controls.ongoingTouches = e.changedTouches;
 };
 
-function TouchHandleEnd(event) {
-    event.preventDefault();
+function TouchHandleEnd(e) {
+    e.preventDefault();
     controls.touchStarted = false;
 
-    controls.start.x = 0;
-    controls.start.y = 0;
-
-    controls.end.x = 0;
-    controls.end.y = 0;
+    controls.ongoingTouches = [];
 };
+
+let touchPadle = {
+    up: false,
+    down: false,
+
+    update: function () {
+        this.up = false;
+        this.down = false;
+
+        for (let i = 0; i < controls.ongoingTouches.length; i++) {
+            if (
+                (controls.ongoingTouches[0].pageX - rect.left) * ratio < canvas.width / 2 &&
+                (controls.ongoingTouches[0].pageX - rect.left) * ratio > 0 &&
+                (controls.ongoingTouches[0].pageY - rect.top) * ratio < canvas.height &&
+                (controls.ongoingTouches[0].pageY - rect.top) * ratio > 0
+            ) {
+                this.down = true;
+            }
+            if (
+                (controls.ongoingTouches[0].pageX - rect.left) * ratio < canvas.width &&
+                (controls.ongoingTouches[0].pageX - rect.left) * ratio > canvas.width / 2 &&
+                (controls.ongoingTouches[0].pageY - rect.top) * ratio < canvas.height &&
+                (controls.ongoingTouches[0].pageY - rect.top) * ratio > 0
+            ) {
+                this.up = true;
+            }
+        }
+    },
+    draw: function () {
+    }
+}
 
 function coinflip() {
     if (Math.random() * 2 <= 1) {
@@ -371,52 +365,5 @@ let xpCounter = {
         ctx.fillText(this.score + ' XP', 0, 0);
 
         ctx.restore();
-    }
-}
-
-let joyStick = {
-    stickX: 0,
-    stickY: 0,
-    x: 0,
-    y: 0,
-    size: 200,
-    padding: 10,
-    color: 'white',
-    vertical: 0,
-    horizontal: 0,
-
-    update: function () {
-        this.vertical = this.stickY / (this.size / 2)
-        this.horizontal = this.stickX / (this.size / 2)
-
-        this.stickX = -(controls.start.x - controls.end.x);
-        this.stickY = -(controls.start.y - controls.end.y);
-
-        if (this.stickX > this.size / 2) {
-            this.stickX = this.size / 2;
-        } else if (this.stickX < -this.size / 2) {
-            this.stickX = -this.size / 2;
-        }
-
-        if (this.stickY > this.size / 2) {
-            this.stickY = this.size / 2;
-        } else if (this.stickY < -this.size / 2) {
-            this.stickY = -this.size / 2;
-        }
-    },
-    draw: function () {
-        if (controls.touchStarted) {
-            ctx.globalAlpha = 0.4;
-
-            ctx.beginPath();
-            ctx.arc(controls.start.x, controls.start.y, this.size / 2, 0, 2 * Math.PI);
-            ctx.strokeStyle = this.color;
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.arc(controls.start.x + this.stickX, controls.start.y + this.stickY, this.size / 2 - this.padding, 0, 2 * Math.PI);
-            ctx.fillStyle = this.color;
-            ctx.fill();
-        }
     }
 }
