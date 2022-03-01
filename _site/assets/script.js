@@ -13,24 +13,6 @@ let fps = 0;
 let run = true;
 let resetTime = false;
 
-function requestFullScreen(element) {
-    // Supports most browsers and their versions.
-    var requestMethod =
-        element.requestFullScreen ||
-        element.webkitRequestFullScreen ||
-        element.mozRequestFullScreen ||
-        element.msRequestFullScreen;
-
-    if (requestMethod) { // Native full screen.
-        requestMethod.call(element);
-    } else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
-        var wscript = new ActiveXObject("WScript.Shell");
-        if (wscript !== null) {
-            wscript.SendKeys("{F11}");
-        }
-    }
-}
-
 let controls = {
     left: false,
     right: false,
@@ -73,7 +55,7 @@ let myGameArea = {
         opponent.position.x = canvas.width - opponent.size.width - 40,
         opponent.position.y = canvas.height / 2 - opponent.size.height / 2
 
-        // draw();
+        myGameArea.start();
     },
     canvasStyle: function () {
         /*

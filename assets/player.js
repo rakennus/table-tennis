@@ -5,9 +5,9 @@ let player = new function () {
     this.velocity = { x: 0, y: 0 };
     this.roundedVelocity = { x: 0, y: 0 };
 
-    this.friction = 0.3;
+    this.friction = 0.05;
     this.maxVelocity = 800;
-    this.accelleration = 4000;
+    this.accelleration = 8000;
     this.touchAccelleration = 4000;
     this.points = 0;
     this.score = 0;
