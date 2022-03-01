@@ -28,7 +28,7 @@ let ball = new function () {
 
         this.velocity.x = -speed;
 
-        if (coinflip()) {
+        if (Math.random() * 2 <= 1) {
             this.velocity.y = -speed;
         } else {
             this.velocity.y = speed;
@@ -44,7 +44,7 @@ let ball = new function () {
         if (this.position.x + this.size.width + this.roundedVelocity.x >= canvas.width) {
             this.reset();
             player.points++;
-            xpAnnouncers.push(new xpAnnouncer(2000));
+            xpAnnouncers.push(new xpAnnouncer(100));
         } else if (this.position.x + this.roundedVelocity.x <= 0) {
             this.reset();
             opponent.points++;
