@@ -31,15 +31,12 @@ window.onload = (e) => { game.load() }
 
 let game = {
     load: function () {
-        // calculating scaling of canvas
-        scale = canvas.width / canvas.clientWidth;
+        // updating stuff
+        game.variableUpdate;
 
-        // recalculating scaling of canvas on resize or orientation change of the window    
-        window.addEventListener('resize', () => scale = canvas.width / canvas.clientWidth);
-        screen.orientation.addEventListener('change', () => scale = canvas.width / canvas.clientWidth);
-
-        // Get canvas position in viewport
-        rect = canvas.getBoundingClientRect();
+        // updating stuff on resize or orientation change of the window    
+        window.addEventListener('resize', this.variableUpdate());
+        screen.orientation.addEventListener('change', this.variableUpdate());
 
         // touch listener
         canvas.addEventListener("touchstart", TouchHandleStart, false);
@@ -60,6 +57,12 @@ let game = {
             opponent.position.y = canvas.height / 2 - opponent.size.height / 2
 
         game.start();
+    },
+    variableUpdate: function () {
+        // calculating scaling of canvas
+        scale = canvas.width / canvas.clientWidth;
+        // Get canvas position in viewport
+        rect = canvas.getBoundingClientRect();
     },
     start: function () {
         // Start the first frame request
@@ -150,6 +153,24 @@ function draw() {
     ctx.fillText(player.points, canvas.width / 4, 20);
     ctx.textAlign = "left";
     ctx.fillText(opponent.points, canvas.width - canvas.width / 4, 20);
+
+    // arrows for touch controls
+    if (controls.touchControls) {
+        ctx.fillStyle = 'white';
+        ctx.globalAlpha = 0.4;
+        ctx.fillRect(canvas.width / 4 - 10, canvas.height / 2 - 70, 20, 140)
+        ctx.fillRect(canvas.width / 4 - 30, canvas.height / 2 + 30, 20, 20)
+        ctx.fillRect(canvas.width / 4 - 50, canvas.height / 2 + 10, 20, 20)
+        ctx.fillRect(canvas.width / 4 + 10, canvas.height / 2 + 30, 20, 20)
+        ctx.fillRect(canvas.width / 4 + 30, canvas.height / 2 + 10, 20, 20)
+
+        ctx.fillRect(canvas.width - canvas.width / 4 - 10, canvas.height / 2 - 70, 20, 140)
+        ctx.fillRect(canvas.width - canvas.width / 4 - 30, canvas.height / 2 - 50, 20, 20)
+        ctx.fillRect(canvas.width - canvas.width / 4 - 50, canvas.height / 2 - 30, 20, 20)
+        ctx.fillRect(canvas.width - canvas.width / 4 + 10, canvas.height / 2 - 50, 20, 20)
+        ctx.fillRect(canvas.width - canvas.width / 4 + 30, canvas.height / 2 - 30, 20, 20)
+        ctx.globalAlpha = 1;
+    }
 }
 
 function keyDownHandler(e) {

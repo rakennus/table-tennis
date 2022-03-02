@@ -15,7 +15,7 @@ let touchPadle = {
                 (controls.ongoingTouches[0].pageY - rect.top) * scale < canvas.height &&
                 (controls.ongoingTouches[0].pageY - rect.top) * scale > 0
             ) {
-                this.up = true;
+                this.down = true;
             }
             if (
                 (controls.ongoingTouches[0].pageX - rect.left) * scale < canvas.width &&
@@ -23,7 +23,7 @@ let touchPadle = {
                 (controls.ongoingTouches[0].pageY - rect.top) * scale < canvas.height &&
                 (controls.ongoingTouches[0].pageY - rect.top) * scale > 0
             ) {
-                this.down = true;
+                this.up = true;
             }
         }
     },
@@ -32,7 +32,7 @@ let touchPadle = {
         ctx.strokeStyle = 'white';
         ctx.globalAlpha = 0.1;
 
-        if (this.up) {
+        if (this.down) {
             ctx.moveTo(this.margin, this.margin);
             ctx.lineTo(this.width - this.margin, this.margin);
 
@@ -53,7 +53,7 @@ let touchPadle = {
             ctx.fillRect(this.margin, this.margin, this.width - this.margin * 2, canvas.height - this.margin * 2);
         }
 
-        if (this.down) {
+        if (this.up) {
             ctx.moveTo(canvas.width - this.width + this.margin, this.margin);
             ctx.lineTo(canvas.width - this.margin, this.margin);
 
