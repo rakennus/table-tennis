@@ -10,9 +10,6 @@ let secondsPassed = 0;
 let oldTimeStamp = 0;
 let fps = 0;
 
-let run = true;
-let resetTime = false;
-
 let xpAnnouncers = [];
 
 let controls = {
@@ -56,7 +53,7 @@ let game = {
         opponent.position.x = canvas.width - opponent.size.width - 40;
         opponent.position.y = canvas.height / 2 - opponent.size.height / 2;
 
-        game.start();
+        window.requestAnimationFrame(gameLoop);
     },
     variableUpdate: function () {
         // calculating scaling of canvas
@@ -64,23 +61,12 @@ let game = {
         // Get canvas position in viewport
         rect = canvas.getBoundingClientRect();
     },
-    start: function () {
-        // Start the first frame request
-        window.requestAnimationFrame(gameLoop);
-        run = true;
-        resetTime = true;
-    },
-    stop: function () {
-        run = false;
-    }
 }
 
 function gameLoop(timeStamp) {
     // Calculate the number of seconds passed since the last frame
     secondsPassed = (timeStamp - oldTimeStamp) / 1000;
     oldTimeStamp = timeStamp;
-
-    if (resetTime) secondsPassed = 0; resetTime = false;
 
     // Calculate fps
     fps = Math.round(1 / secondsPassed);
@@ -93,7 +79,7 @@ function gameLoop(timeStamp) {
     }
 
     // The loop function has reached it's end. Keep requesting new frames
-    if (run) window.requestAnimationFrame(gameLoop);
+    window.requestAnimationFrame(gameLoop);
 }
 
 // update all objects
@@ -113,7 +99,7 @@ function update() {
     }
 
     xpCounter.update();
-    //stopButton.update();
+    stopButton.update();
     touchPadle.update();
 }
 
@@ -137,7 +123,7 @@ function draw() {
     }
 
     xpCounter.draw();
-    //stopButton.draw();
+    stopButton.draw();
     touchPadle.draw();
 
     // draw fps
