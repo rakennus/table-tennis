@@ -50,11 +50,11 @@ let game = {
         ball.reset();
 
         // positioning player and opponent
-        player.position.x = 40,
-            player.position.y = canvas.height / 2 - player.size.height / 2
+        player.position.x = 40;
+        player.position.y = canvas.height / 2 - player.size.height / 2;
 
-        opponent.position.x = canvas.width - opponent.size.width - 40,
-            opponent.position.y = canvas.height / 2 - opponent.size.height / 2
+        opponent.position.x = canvas.width - opponent.size.width - 40;
+        opponent.position.y = canvas.height / 2 - opponent.size.height / 2;
 
         game.start();
     },
@@ -113,7 +113,7 @@ function update() {
     }
 
     xpCounter.update();
-
+    //stopButton.update();
     touchPadle.update();
 }
 
@@ -137,7 +137,7 @@ function draw() {
     }
 
     xpCounter.draw();
-
+    //stopButton.draw();
     touchPadle.draw();
 
     // draw fps
