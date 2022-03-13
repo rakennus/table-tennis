@@ -37,8 +37,7 @@ let game = {
 
         // updating stuff on resize or orientation change of the window    
         window.addEventListener('resize', this.variableUpdate());
-        screen.orientation.addEventListener('change', this.variableUpdate());
-
+        
         // touch listener
         canvas.addEventListener("touchstart", TouchHandleStart, false);
         canvas.addEventListener("touchmove", TouchHandleMove, false);
