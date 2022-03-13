@@ -22,7 +22,6 @@ let ball = new function () {
     };
 
     this.reset = function () {
-
         this.position.x = canvas.width / 2 - ball.size.width / 2;
         this.position.y = canvas.height / 2 - ball.size.height / 2;
 

@@ -1,4 +1,4 @@
-function xpAnnouncer(amount) {
+let xpAnnouncer = function (amount) {
     this.amount = amount;
     this.rotation = -0.15;
     this.x = canvas.width / 2;
@@ -44,12 +44,12 @@ function xpAnnouncer(amount) {
     }
 }
 
-let xpCounter = {
-    rotation: 0,
-    timer: 0,
-    score: 0,
+let xpCounter = new function() {
+    this.rotation = 0;
+    this.timer = 0;
+    this.score = 0;
 
-    update: function () {
+    this.update = function () {
         this.timer += secondsPassed;
 
         this.rotation += 1 * secondsPassed;
@@ -61,8 +61,8 @@ let xpCounter = {
         if (this.score > player.score) {
             this.score = player.score;
         }
-    },
-    draw: function () {
+    }
+    this.draw = function () {
         ctx.save();
         ctx.translate(canvas.width / 2, 20);
 

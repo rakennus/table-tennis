@@ -1,7 +1,7 @@
 "use strict";
 // global variable declaration
-let canvas = document.getElementById('canvas');
-let ctx = canvas.getContext('2d');
+let canvas;
+let ctx;
 let rect = null;
 
 let scale = 0;
@@ -28,6 +28,10 @@ window.onload = (e) => { game.load() }
 
 let game = {
     load: function () {
+        canvas = document.getElementById('canvas');
+        ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = false;
+
         // updating stuff
         game.variableUpdate;
 
@@ -66,6 +70,7 @@ let game = {
 function gameLoop(timeStamp) {
     // Calculate the number of seconds passed since the last frame
     secondsPassed = (timeStamp - oldTimeStamp) / 1000;
+    if (secondsPassed > 0.1) secondsPassed = 0.1; 
     oldTimeStamp = timeStamp;
 
     // Calculate fps

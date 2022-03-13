@@ -1,13 +1,13 @@
-let stopButton = {
-    width: 40,
-    height: 40,
-    margin: 40,
-    x: canvas.width - this.width - this.margin / 2,
-    y: this.margin / 2,
+let stopButton = new function() {
+    this.width = 40;
+    this.height = 40;
+    this.margin = 40;
+    this.x = 0;
+    this.y = 0;
 
-    update: function () {
+    this.update = function () {
         this.x = canvas.width - this.width - this.margin / 2;
-        this.y = this.margin / 2;    
+        this.y = this.margin / 2;
 
         for (let i = 0; i < controls.ongoingTouches.length; i++) {
             if (
@@ -27,11 +27,11 @@ let stopButton = {
                 this.up = true;
             }
         }
-    },
+    }
 
-    draw: function () {
+    this.draw = function () {
         ctx.beginPath();
         ctx.fillStyle = 'white';
         ctx.fillRect(this.x, this.y, this.width, this.height);
-    },
+    }
 }
