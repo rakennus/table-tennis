@@ -32,12 +32,6 @@ let game = {
         ctx = canvas.getContext('2d');
         ctx.imageSmoothingEnabled = false;
 
-        // updating stuff
-        game.variableUpdate;
-
-        // updating stuff on resize or orientation change of the window    
-        window.addEventListener('resize', this.variableUpdate());
-        
         // touch listener
         canvas.addEventListener("touchstart", TouchHandleStart, false);
         canvas.addEventListener("touchmove", TouchHandleMove, false);
@@ -58,22 +52,21 @@ let game = {
 
         window.requestAnimationFrame(gameLoop);
     },
-    variableUpdate: function () {
-        // calculating scaling of canvas
-        scale = canvas.width / canvas.clientWidth;
-        // Get canvas position in viewport
-        rect = canvas.getBoundingClientRect();
-    },
 }
 
 function gameLoop(timeStamp) {
     // Calculate the number of seconds passed since the last frame
     secondsPassed = (timeStamp - oldTimeStamp) / 1000;
-    if (secondsPassed > 0.1) secondsPassed = 0.1; 
+    if (secondsPassed > 0.1) secondsPassed = 0.1;
     oldTimeStamp = timeStamp;
 
     // Calculate fps
     fps = Math.round(1 / secondsPassed);
+
+    // calculating scaling of canvas
+    scale = canvas.width / canvas.clientWidth;
+    // Get canvas position in viewport
+    rect = canvas.getBoundingClientRect();
 
     if (!document.hidden) {
         // Update game objects in the loop
