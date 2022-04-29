@@ -95,8 +95,7 @@ function update() {
         if (xpAnnouncers[i].timer >= xpAnnouncers[i].time) xpAnnouncers.splice(xpAnnouncers.indexOf(xpAnnouncers[i]), 1);
     }
 
-    xpCounter.update();
-    stopButton.update();
+    levelStats.update();
     touchPadle.update();
 }
 
@@ -119,8 +118,7 @@ function draw() {
         xpAnnouncers[i].draw();
     }
 
-    xpCounter.draw();
-    stopButton.draw();
+    levelStats.draw();
     touchPadle.draw();
 
     // draw fps
@@ -128,14 +126,6 @@ function draw() {
     ctx.textAlign = "left";
     ctx.fillStyle = 'white';
     ctx.fillText("FPS: " + fps, 20, 20);
-
-    // draw points
-    ctx.font = '80px Arial';
-    ctx.textBaseline = 'top';
-    ctx.textAlign = "right";
-    ctx.fillText(player.points, canvas.width / 4, 20);
-    ctx.textAlign = "left";
-    ctx.fillText(opponent.points, canvas.width - canvas.width / 4, 20);
 
     // arrows for touch controls
     if (controls.touchControls) {

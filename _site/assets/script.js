@@ -1,7 +1,7 @@
 "use strict";
 // global variable declaration
-let canvas = document.getElementById('canvas');
-let ctx = canvas.getContext('2d');
+let canvas;
+let ctx;
 let rect = null;
 
 let scale = 0;
@@ -28,12 +28,9 @@ window.onload = (e) => { game.load() }
 
 let game = {
     load: function () {
-        // updating stuff
-        game.variableUpdate;
-
-        // updating stuff on resize or orientation change of the window    
-        window.addEventListener('resize', this.variableUpdate());
-        screen.orientation.addEventListener('change', this.variableUpdate());
+        canvas = document.getElementById('canvas');
+        ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = false;
 
         // touch listener
         canvas.addEventListener("touchstart", TouchHandleStart, false);
@@ -55,21 +52,21 @@ let game = {
 
         window.requestAnimationFrame(gameLoop);
     },
-    variableUpdate: function () {
-        // calculating scaling of canvas
-        scale = canvas.width / canvas.clientWidth;
-        // Get canvas position in viewport
-        rect = canvas.getBoundingClientRect();
-    },
 }
 
 function gameLoop(timeStamp) {
     // Calculate the number of seconds passed since the last frame
     secondsPassed = (timeStamp - oldTimeStamp) / 1000;
+    if (secondsPassed > 0.1) secondsPassed = 0.1;
     oldTimeStamp = timeStamp;
 
     // Calculate fps
     fps = Math.round(1 / secondsPassed);
+
+    // calculating scaling of canvas
+    scale = canvas.width / canvas.clientWidth;
+    // Get canvas position in viewport
+    rect = canvas.getBoundingClientRect();
 
     if (!document.hidden) {
         // Update game objects in the loop
@@ -98,8 +95,7 @@ function update() {
         if (xpAnnouncers[i].timer >= xpAnnouncers[i].time) xpAnnouncers.splice(xpAnnouncers.indexOf(xpAnnouncers[i]), 1);
     }
 
-    xpCounter.update();
-    stopButton.update();
+    levelStats.update();
     touchPadle.update();
 }
 
@@ -122,8 +118,7 @@ function draw() {
         xpAnnouncers[i].draw();
     }
 
-    xpCounter.draw();
-    stopButton.draw();
+    levelStats.draw();
     touchPadle.draw();
 
     // draw fps
@@ -131,14 +126,6 @@ function draw() {
     ctx.textAlign = "left";
     ctx.fillStyle = 'white';
     ctx.fillText("FPS: " + fps, 20, 20);
-
-    // draw points
-    ctx.font = '80px Arial';
-    ctx.textBaseline = 'top';
-    ctx.textAlign = "right";
-    ctx.fillText(player.points, canvas.width / 4, 20);
-    ctx.textAlign = "left";
-    ctx.fillText(opponent.points, canvas.width - canvas.width / 4, 20);
 
     // arrows for touch controls
     if (controls.touchControls) {

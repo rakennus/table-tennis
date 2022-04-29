@@ -10,8 +10,6 @@
         body {
             background-color: #202020;
             overflow: hidden;
-            margin: 0;
-            padding: 0;
         }
 
         #canvas {
@@ -20,12 +18,9 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            box-shadow: #0000008f 0 0 10px 10px;
             background-color: black;
-            image-rendering: -moz-crisp-edges;
-            image-rendering: -webkit-crisp-edges;
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
-
+            
             display: block;
             max-width: 100%;
             max-height: 100%;
@@ -36,16 +31,14 @@
 </head>
 
 <body>
-    <canvas id="canvas" width="1000px"
-        height="600px"></canvas>
-
-    <script src="assets/script.js"></script>
-    <script src="assets/player.js"></script>
-    <script src="assets/opponent.js"></script>
-    <script src="assets/ball.js"></script>
-    <script src="assets/score.js"></script>
-    <script src="assets/touch.js"></script>
-    <script src="assets/stopButton.js"></script>
+    <canvas id="canvas" width="1000px" height="600px"></canvas>
 </body>
+
+<script src="assets/script.js"></script>
+<script src="assets/player.js"></script>
+<script src="assets/opponent.js"></script>
+<script src="assets/ball.js"></script>
+<script src="assets/score.js"></script>
+<script src="assets/touch.js"></script>
 
 </html>

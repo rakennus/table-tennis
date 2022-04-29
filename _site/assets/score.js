@@ -1,4 +1,4 @@
-function xpAnnouncer(amount) {
+let xpAnnouncer = function (amount) {
     this.amount = amount;
     this.rotation = -0.15;
     this.x = canvas.width / 2;
@@ -44,34 +44,81 @@ function xpAnnouncer(amount) {
     }
 }
 
-let xpCounter = {
-    rotation: 0,
-    timer: 0,
-    score: 0,
+let levelStats = new function () {
+    this.rotation = 0;
+    this.timer = 0;
+    this.smoothXP = 0;
 
-    update: function () {
+    this.barValue = 0;
+    this.lvl = 0;
+    this.xpLeft = 700;
+
+    this.update = function () {
         this.timer += secondsPassed;
 
         this.rotation += 1 * secondsPassed;
 
-        if (this.score < player.score) {
-            this.score += Math.trunc(800 * secondsPassed);
+        if (this.smoothXP < player.XP) {
+            this.smoothXP += Math.trunc(800 * secondsPassed);
         }
 
-        if (this.score > player.score) {
-            this.score = player.score;
+        if (this.smoothXP > player.XP) {
+            this.smoothXP = player.XP;
         }
-    },
-    draw: function () {
+
+        if (this.smoothXP >= this.xpLeft) {
+            this.lvl++;
+            this.xpLeft += 100;
+            player.XP = 0;
+
+            player.points = 0;
+            opponent.points = 0;
+        }
+    }
+
+    this.draw = function () {
         ctx.save();
-        ctx.translate(canvas.width / 2, 20);
+        ctx.translate(canvas.width / 2, 60);
 
-        ctx.rotate(Math.trunc(Math.sin(xpCounter.timer * 2) * 100) / 200);
+        ctx.rotate(Math.trunc(Math.sin(this.timer * 2) * 50) / 200);
 
         ctx.font = '30px Arial';
         ctx.textAlign = "center";
-        ctx.fillText(this.score + ' XP', 0, 0);
+        ctx.fillText(this.smoothXP + ' XP', 0, 0);
 
         ctx.restore();
+
+        ctx.strokeStyle = "white";
+        ctx.rect(
+            canvas.width / 4 + 20,
+            25,
+            canvas.width / 2 - 40,
+            25
+        );
+        ctx.stroke();
+
+        ctx.fillStyle = "white";
+        ctx.fillRect(
+            canvas.width / 4 + 20,
+            25,
+            (canvas.width / 2 - 40) / this.xpLeft * this.smoothXP,
+            25
+        );
+
+        // draw xp and level stats
+        ctx.font = '30px Arial';
+        ctx.textBaseline = 'base';
+        ctx.textAlign = "right";
+        ctx.fillText("lvl: " + this.lvl, canvas.width - canvas.width / 4 - 20, 60);
+        ctx.textAlign = "left";
+        ctx.fillText("xp left: " + (this.xpLeft - this.smoothXP), canvas.width / 4 + 20, 60);
+
+        // draw points
+        ctx.font = '80px Arial';
+        ctx.textBaseline = 'top';
+        ctx.textAlign = "right";
+        ctx.fillText(player.points, canvas.width / 4, 20);
+        ctx.textAlign = "left";
+        ctx.fillText(opponent.points, canvas.width - canvas.width / 4, 20);
     }
 }

@@ -1,10 +1,10 @@
-let touchPadle = {
-    up: false,
-    down: false,
-    margin: 50,
-    width: 300,
+let touchPadle = new function () {
+    this.up = false;
+    this.down = false;
+    this.margin = 50;
+    this.width = 300;
 
-    update: function () {
+    this.update = function () {
         this.up = false;
         this.down = false;
 
@@ -26,8 +26,8 @@ let touchPadle = {
                 this.up = true;
             }
         }
-    },
-    draw: function () {
+    }
+    this.draw = function () {
         ctx.save();
         ctx.strokeStyle = 'white';
 
@@ -45,7 +45,7 @@ let touchPadle = {
 
             ctx.stroke();
         }
-        
+
         if (this.up) {
             ctx.beginPath();
 
@@ -60,16 +60,17 @@ let touchPadle = {
 
             ctx.stroke();
         }
-        
+
         ctx.restore();
     }
 }
 
-let touchControlAnnouncer = {
-    timer: 0,
-    alpha: 0,
-    visible: true,
-    update: function () {
+let touchControlAnnouncer = new function () {
+    this.timer = 0;
+    this.alpha = 0;
+    this.visible = true;
+
+    this.update = function () {
         if (controls.timeNotTouched < 5) {
             this.alpha -= 1 * secondsPassed;
         } else {
@@ -82,8 +83,8 @@ let touchControlAnnouncer = {
         if (this.alpha <= 0) {
             this.alpha = 0;
         }
-    },
-    draw: function () {
+    }
+    this.draw = function () {
         ctx.font = '30px Arial';
         ctx.textAlign = "center";
         ctx.globalAlpha = this.alpha;
@@ -94,7 +95,7 @@ let touchControlAnnouncer = {
             canvas.width / 2,
             canvas.height / 2
         );
-        
+
         ctx.textBaseline = 'top';
         ctx.fillText(
             'or tap on the right and on the left to move up and down.',
@@ -103,5 +104,5 @@ let touchControlAnnouncer = {
         );
 
         ctx.globalAlpha = 1;
-    },
+    }
 }

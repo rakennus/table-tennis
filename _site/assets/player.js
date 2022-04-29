@@ -1,16 +1,17 @@
 let player = new function () {
     // player properties
+    this.roundedPosition = { x: 200, y: 20, };
     this.position = { x: 0, y: 0 };
-    this.size = { width: 20, height: 100 };
     this.velocity = { x: 0, y: 0 };
     this.roundedVelocity = { x: 0, y: 0 };
+    this.size = { width: 20, height: 100 };
 
-    this.friction = 0.05;
+    this.friction = 0.005;
     this.maxVelocity = 800;
     this.accelleration = 8000;
     this.touchAccelleration = 4000;
     this.points = 0;
-    this.score = 0;
+    this.XP = 0;
 
     this.update = function () {
         this.movment();
@@ -41,30 +42,35 @@ let player = new function () {
         if (this.velocity.y <= -this.maxVelocity) this.velocity.y = -this.maxVelocity;
 
         // collision detection with canvas borders
-        if (this.position.y + this.roundedVelocity.y < 0) {
+        if (this.roundedPosition.y + this.roundedVelocity.y < 0) {
             this.velocity.y = 0;
             this.roundedVelocity.y = 0;
             this.position.y = 0;
+            this.roundedPosition.y = 0;
         } else if (this.position.y + this.size.height + this.roundedVelocity.y > canvas.height) {
             this.velocity.y = 0;
             this.roundedVelocity.y = 0;
             this.position.y = canvas.height - this.size.height;
+            this.roundedPosition.y = canvas.height - this.size.height;
         }
 
         // calculating the position by applaying the velocity to the old position
+        this.position.x += this.velocity.x * secondsPassed;
+        this.position.y += this.velocity.y * secondsPassed;
+
         this.roundedVelocity.x = Math.trunc(this.velocity.x * secondsPassed);
         this.roundedVelocity.y = Math.trunc(this.velocity.y * secondsPassed);
 
-        this.position.x += this.roundedVelocity.x;
-        this.position.y += this.roundedVelocity.y;
+        this.roundedPosition.x = Math.trunc(this.position.x);
+        this.roundedPosition.y = Math.trunc(this.position.y);
     }
 
     // function to draw the players paddle
     this.draw = function () {
         ctx.fillStyle = "white";
         ctx.fillRect(
-            this.position.x,
-            this.position.y,
+            this.roundedPosition.x,
+            this.roundedPosition.y,
             this.size.width,
             this.size.height
         );
