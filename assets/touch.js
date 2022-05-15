@@ -44,6 +44,7 @@ let touchPadle = new function () {
             ctx.lineTo(this.width - this.margin, canvas.height - this.margin);
 
             ctx.stroke();
+            ctx.closePath();
         }
 
         if (this.up) {
@@ -59,6 +60,7 @@ let touchPadle = new function () {
             ctx.lineTo(canvas.width - this.margin, canvas.height - this.margin);
 
             ctx.stroke();
+            ctx.closePath();
         }
 
         ctx.restore();
@@ -66,43 +68,33 @@ let touchPadle = new function () {
 }
 
 let touchControlAnnouncer = new function () {
-    this.timer = 0;
-    this.alpha = 0;
     this.visible = true;
 
     this.update = function () {
         if (controls.timeNotTouched < 5) {
-            this.alpha -= 1 * secondsPassed;
+            this.visible = false;
         } else {
-            this.alpha += 1 * secondsPassed;
-        }
-
-        if (this.alpha >= 1) {
-            this.alpha = 1;
-        }
-        if (this.alpha <= 0) {
-            this.alpha = 0;
+            this.visible = true;
         }
     }
     this.draw = function () {
-        ctx.font = '30px Arial';
-        ctx.textAlign = "center";
-        ctx.globalAlpha = this.alpha;
+        if (this.visible) {
+            ctx.font = '30px Arial';
+            ctx.textAlign = "center";
 
-        ctx.textBaseline = 'bottom';
-        ctx.fillText(
-            'Use WASD or Arrow keys to move the Player,',
-            canvas.width / 2,
-            canvas.height / 2
-        );
+            ctx.textBaseline = 'bottom';
+            ctx.fillText(
+                'Use WASD or Arrow keys to move the Player,',
+                canvas.width / 2,
+                canvas.height / 2
+            );
 
-        ctx.textBaseline = 'top';
-        ctx.fillText(
-            'or tap on the right and on the left to move up and down.',
-            canvas.width / 2,
-            canvas.height / 2
-        );
-
-        ctx.globalAlpha = 1;
+            ctx.textBaseline = 'top';
+            ctx.fillText(
+                'or tap on the right or on the left to move up and down.',
+                canvas.width / 2,
+                canvas.height / 2
+            );
+        }
     }
 }

@@ -7,8 +7,8 @@ let opponent = new function () {
     this.size = { width: 20, height: 100 };
 
     this.friction = 0;
-    this.maxVelocity = 800;
-    this.accelleration = 1000;
+    this.maxVelocity = 700;
+    this.accelleration = 900;
     this.points = 0;
 
     this.update = function () {

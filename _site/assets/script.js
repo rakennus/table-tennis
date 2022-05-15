@@ -50,6 +50,9 @@ let game = {
         opponent.position.x = canvas.width - opponent.size.width - 40;
         opponent.position.y = canvas.height / 2 - opponent.size.height / 2;
 
+        levelStats.lvl = localStorage.getItem("table-tennis-lvl");
+        levelStats.xpLeft = 700 + levelStats.lvl * 100;
+
         window.requestAnimationFrame(gameLoop);
     },
 }
@@ -128,6 +131,7 @@ function draw() {
     ctx.fillText("FPS: " + fps, 20, 20);
 
     // arrows for touch controls
+    /*
     if (controls.touchControls) {
         ctx.fillStyle = 'white';
         ctx.globalAlpha = 0.4;
@@ -144,6 +148,7 @@ function draw() {
         ctx.fillRect(canvas.width - canvas.width / 4 + 30, canvas.height / 2 - 30, 20, 20)
         ctx.globalAlpha = 1;
     }
+    */
 }
 
 function keyDownHandler(e) {

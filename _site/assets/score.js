@@ -10,7 +10,7 @@ let xpAnnouncer = function (amount) {
     this.added = 0;
     this.playerScore = player.score;
 
-    player.score += this.amount;
+    levelStats.xp += 100;
 
     this.update = function () {
         this.timer += secondsPassed;
@@ -47,29 +47,31 @@ let xpAnnouncer = function (amount) {
 let levelStats = new function () {
     this.rotation = 0;
     this.timer = 0;
+    this.xp = 0;
     this.smoothXP = 0;
 
     this.barValue = 0;
     this.lvl = 0;
-    this.xpLeft = 700;
+    this.xpLeft = 0;
 
     this.update = function () {
         this.timer += secondsPassed;
 
         this.rotation += 1 * secondsPassed;
 
-        if (this.smoothXP < player.XP) {
+        if (this.smoothXP < this.xp) {
             this.smoothXP += Math.trunc(800 * secondsPassed);
         }
 
-        if (this.smoothXP > player.XP) {
-            this.smoothXP = player.XP;
+        if (this.smoothXP > this.xp) {
+            this.smoothXP = this.xp;
         }
 
         if (this.smoothXP >= this.xpLeft) {
             this.lvl++;
-            this.xpLeft += 100;
-            player.XP = 0;
+            localStorage.setItem("table-tennis-lvl", levelStats.lvl)
+            this.xp = 0;
+            this.xpLeft = 700 + this.lvl * 100;
 
             player.points = 0;
             opponent.points = 0;
@@ -88,6 +90,7 @@ let levelStats = new function () {
 
         ctx.restore();
 
+        ctx.beginPath();
         ctx.strokeStyle = "white";
         ctx.rect(
             canvas.width / 4 + 20,
@@ -96,6 +99,7 @@ let levelStats = new function () {
             25
         );
         ctx.stroke();
+        ctx.closePath();
 
         ctx.fillStyle = "white";
         ctx.fillRect(
