@@ -4,9 +4,9 @@ let player = new function () {
     this.position = { x: 0, y: 0 };
     this.velocity = { x: 0, y: 0 };
     this.roundedVelocity = { x: 0, y: 0 };
-    this.size = { width: 20, height: 100 };
+    this.size = { width: 20, height: 80 };
 
-    this.friction = 0.005;
+    this.friction = 0.01;
     this.maxVelocity = 800;
     this.accelleration = 8000;
     this.touchAccelleration = 4000;

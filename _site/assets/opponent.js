@@ -4,11 +4,11 @@ let opponent = new function () {
     this.position = { x: 0, y: 0 };
     this.velocity = { x: 0, y: 0 };
     this.roundedVelocity = { x: 0, y: 0 };
-    this.size = { width: 20, height: 100 };
+    this.size = { width: 20, height: 80 };
 
-    this.friction = 0;
-    this.maxVelocity = 700;
-    this.accelleration = 900;
+    this.friction = 0.004;
+    this.maxVelocity = 1000;
+    this.accelleration = 600;
     this.points = 0;
 
     this.update = function () {
